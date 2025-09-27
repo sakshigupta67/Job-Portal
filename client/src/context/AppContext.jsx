@@ -10,6 +10,9 @@ export const AppContextProvider = (props) => {
     }
 
 
+return (<AppContext.Provider value={vlaue}>
+{props.children}
 
+</AppContext.Provider>)
     
 }
