@@ -16,14 +16,11 @@ const onSearch =() => {
 
     setSearchFilter({
       title:titleRef.current.value,
-      loctaion: locationRef.current.value
+      location: locationRef.current.value
     })
 
     setIsSearched(true)
-    console.log({
-      title:titleRef.current.value,
-      loctaion: locationRef.current.value
-    })
+
 }
 
 
@@ -83,11 +80,6 @@ const onSearch =() => {
   <img className='h-6' src={assets.adobe_logo} alt="" />
 </div>
       </div>
-
-
-
-
-
 
 
 

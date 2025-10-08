@@ -18,7 +18,7 @@ items-center'>
 
 <img src={assets.logo} alt =""  />
 
-{
+{ 
     
 user 
 ?<div className='flex gap-4 max-sm:text-xs '>
