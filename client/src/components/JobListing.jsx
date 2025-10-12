@@ -24,7 +24,7 @@ const handleCategoryChange = (category) => {
     )
 }
 
-const handleLocationChange = (category) => {
+const handleLocationChange = (location) => {
     setSelectedLocations(
         prev => prev.includes(location) ? prev.filter(c => c !== location) : [...prev , location]
     )
@@ -89,7 +89,7 @@ isSearched && ( searchFilter.title !== ""  || searchFilter.location  !== "") && 
             className='scale-125' 
             type="checkbox"
              onChange={() => handleCategoryChange(category)}
-             checked= {selectedCategories.includes(category)}
+             checked= {selectedCategories.includes(cate)}
              
              />
                 {category}
