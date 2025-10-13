@@ -32,9 +32,6 @@ const handleLocationChange = (location) => {
 
 
 
-
-
-
   return (
     <div className='container 2xl:px-20 mx-auto flex flex-col lg:flex-row max:lg space-y-8 py-8'>
 
@@ -64,7 +61,6 @@ isSearched && ( searchFilter.title !== ""  || searchFilter.location  !== "") && 
     </div>
     </>
 )
-
 }
 
 <button onClick = {e=> setShowFilter(prev => !prev )} className='px-6 py-1.5 rounded border border-gray-400 lg:hidden'>
@@ -89,7 +85,7 @@ isSearched && ( searchFilter.title !== ""  || searchFilter.location  !== "") && 
             className='scale-125' 
             type="checkbox"
              onChange={() => handleCategoryChange(category)}
-             checked= {selectedCategories.includes(cate)}
+             checked= {selectedCategories.includes(category)}
              
              />
                 {category}
@@ -115,8 +111,8 @@ isSearched && ( searchFilter.title !== ""  || searchFilter.location  !== "") && 
             <input className='scale-125'
              type="checkbox" 
 
-              onChange={() => handleCategoryChange(category)}
-             checked= {selectedCategories.includes(category)}
+              onChange={() => handleLocationChange(location)}
+             checked= {selectedLocations.includes(location)}
              
            />
                 {location}
