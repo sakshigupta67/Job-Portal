@@ -30,11 +30,14 @@ if(jobs.length > 0){
  }, [id, jobs])
 
 
-  return jobsData ? (
+  return jobData ? (
     <div>
 
 
-
+    </div>
+  ) : (
+  
+    <div>
 
 
     </div>
