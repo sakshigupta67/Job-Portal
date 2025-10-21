@@ -7,6 +7,8 @@ import Loading from '../components/Loading'
 import Navbar from '../components/Navbar'
 import kconvert from 'k-convert'
 import moment from 'moment'
+import JobCard from '../components/JobCard'
+import Footer from '../components/Footer'
 
 
 const ApplyJob = () => {
@@ -43,7 +45,7 @@ const ApplyJob = () => {
             <div className='flex flex-col md:flex-row items-center'>
 
 
-              <img className='h-24 bg-white rounded-lg p-4 mr-4 max-md:mb-4 border' src={JobData.companyId.image} alt="" />
+              <img className='h-24 bg-white rounded-lg p-4 mr-4 max-md:mb-4 border border-gray-300' src={JobData.companyId.image} alt="" />
               <div className='text-center md:text-left text-neutral-700'>
                 <h1 className='text-2xl sm:text-4xl font-medium'>{JobData.title}</h1>
 
@@ -91,22 +93,23 @@ const ApplyJob = () => {
     <div className ='rich-text' dangerouslySetInnerHTML={{__html:JobData.description}}></div>
       <button className='bg-blue-600 p-2.5 px-10 text-white rounded mt-10'>Apply Now</button>
   </div>
+  {/* Right Section More JObs  */}
+
+  <div className='w-full lg:w-1/3 mt-8 lg:mt-0 lg:ml-8 space-y-5'>
+<h2>More jobs from {JobData.companyId.name}</h2>
+{jobs.filter(job=>job._id !== JobData._id && job.companyId._id === JobData.companyId._id).filter(job => true).slice(0,4).
+map((job, index) => <JobCard  key={index} job={job} />)}
+
+
+  </div>
 </div>
-    
-
-
-
-
-
-
-
-
-
-
-
+ 
         </div>
 
       </div>
+<Footer />
+
+       
 
 
     </>

@@ -8,7 +8,7 @@ const navigate = useNavigate()
 
 
   return (
-    <div className='border p-6 shadow rounded'>
+  <div className='border border-gray-300 p-6 shadow rounded'>
 <div className='flex justify-between items-center'>
 <img  className= 'h-8' src={assets.company_icon} alt="" />
 </div>
@@ -23,7 +23,7 @@ const navigate = useNavigate()
 <p className ='text-gray-500 text-sm mt-4 ' dangerouslySetInnerHTML={{__html:job.description.slice(0, 150)}}></p>
 <div className='mt-4 flex gap-4 text-sm' >
 <button onClick = {() => {navigate(`/apply-job/${job._id}`); scrollTo(0,0)}} className='bg-blue-600 text-white px-4 py-2 rounded'>Apply now</button>
-<button onClick = {() => {navigate(`/apply-job/${job._id}`); scrollTo(0,0)}} className='text-gray-500 border border-gray-500 rounded px-4 py-2'>Learn more</button>
+<button onClick = {() => {navigate(`/apply-job/${job._id}`); scrollTo(0,0)}} className='text-gray-500 border border-gray-300 rounded px-4 py-2'>Learn more</button>
 
 </div>
 
