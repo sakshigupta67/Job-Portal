@@ -23,7 +23,7 @@ const   App = ()=> {
          <Route path='/apply-job/:id' element= {<ApplyJob />}/>
           <Route path='/applications' element= {<Applications />}/>
  
-       </Routes>
+       </Routes> 
       
       </div>
 
