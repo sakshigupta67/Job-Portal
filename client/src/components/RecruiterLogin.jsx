@@ -20,13 +20,12 @@ const onSubmitHandler = async(e) => {
   }
 }
 
-
   return (
     <div className='fixed inset-0 z-50 bg-black/60 flex items-center justify-center backdrop-blur-sm'>
       {/* full-screen overlay to block background */}
       <div className='fixed inset-0' aria-hidden="true"></div>
 
-      <form role="dialog" aria-modal="true" className='relative bg-white p-8 rounded-xl text-slate-700 w-full max-w-md mx-4'>
+      <form onSubmit = {onSubmitHandler} role="dialog" aria-modal="true" className='relative bg-white p-8 rounded-xl text-slate-700 w-full max-w-md mx-4'>
 
 {
   state === 'Login'
@@ -41,6 +40,17 @@ const onSubmitHandler = async(e) => {
   state === "Sign Up" && isTextDataSubmitted
   ? <>
 
+<div>
+<label htmlFor="image">
+  <img src={assets.upload_area} alt="" />
+  <input type="file" id='image' hidden />
+</label>
+<p>Upload Company <br /> logo</p>
+
+
+</div>
+
+
   </> 
   :  <>
 
@@ -52,6 +62,7 @@ const onSubmitHandler = async(e) => {
   </div>
 </div>
 )}
+
 
 
 
@@ -78,8 +89,8 @@ const onSubmitHandler = async(e) => {
 
 
 
-<button className='mt-2 w-full bg-blue-600 text-white py-2 rounded-3xl'>
-  {state === 'Login' ? 'login' : 'create account'}
+<button type ='submit' className='mt-2 w-full bg-blue-600 text-white py-2 rounded-3xl'>
+  {state === 'Login' ? 'login' : isTextDataSubmitted ?  'create account' : 'next'}
 </button>
 
 {
@@ -89,16 +100,6 @@ state === 'Login'
 :<p className='text-slate-500 mt-5 text-center'>Already have an account? <span className= 'text-blue-600 cursor-pointer ' onClick={() => setState("Login")}>Login</span></p>
 
 }
-
-
-
-
- 
-
-
-
-
-
 
 
 
