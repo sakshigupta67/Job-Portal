@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { assets } from '../assets/assets'
+import { AppContext } from '../context/AppContext'
 
 const RecruiterLogin = () => {
-
+ 
 const [state , setState] = useState('Login')
 const [name , setName] = useState('')
 const [password , setPassword] = useState('')
@@ -12,13 +13,24 @@ const[image , setImage] = useState(false)
 
 const[isTextDataSubmitted , setIsTextDataSubmitted] =useState(false)
 
+const {setShowRecruiterLogin} = useContext(AppContext)
+
 const onSubmitHandler = async(e) => {
-  e.preventDefalut()
+  e.preventDefault()
 
   if(state == "Sign Up" && !isTextDataSubmitted){
     setIsTextDataSubmitted(true)
   }
 }
+
+useEffect(() => {
+  document.body.style.overflow = 'hidden'
+
+  return ()=> {
+    document.body.style.overflow = 'unset'
+  }
+} , [])
+ 
 
   return (
     <div className='fixed inset-0 z-50 bg-black/60 flex items-center justify-center backdrop-blur-sm'>
@@ -40,10 +52,10 @@ const onSubmitHandler = async(e) => {
   state === "Sign Up" && isTextDataSubmitted
   ? <>
 
-<div>
+<div className='flex items-center gap-4 my-10'>
 <label htmlFor="image">
-  <img src={assets.upload_area} alt="" />
-  <input type="file" id='image' hidden />
+  <img className= 'w-16 rounded-full 'src={ image ? URL.createObjectURL(image) : assets.upload_area} alt="" />
+  <input onChange= {e =>setImage(e.target.files[0])} type="file" id='image' hidden />
 </label>
 <p>Upload Company <br /> logo</p>
 
@@ -85,11 +97,11 @@ const onSubmitHandler = async(e) => {
 </>
 }
 
-<p className='text-sm text-blue-600 my-4 cursor-pointer'>Forgot Password?</p>
+{state === "Login"  && <p className='text-sm text-blue-600 mt-4 cursor-pointer'>Forgot Password?</p>}
 
 
 
-<button type ='submit' className='mt-2 w-full bg-blue-600 text-white py-2 rounded-3xl'>
+<button type ='submit' className=' w-full bg-blue-600 text-white py-2 rounded-3xl mt-4'>
   {state === 'Login' ? 'login' : isTextDataSubmitted ?  'create account' : 'next'}
 </button>
 
@@ -101,6 +113,7 @@ state === 'Login'
 
 }
 
+<img onClick={e => setShowRecruiterLogin(false)} className = 'absolute top-5 right-5 cursor-pointer' src={assets.cross_icon} alt="" />
 
 
 </form>
