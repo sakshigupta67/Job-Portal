@@ -1,82 +1,58 @@
-import { Webhook } from "svix";
-
-import User from "../models/User.js";
+console.log("Webhook received!");
 
 
-// API Controller Function to manage Clerk User with database 
+export const clerkWebhooks = async (req, res) => {
+  try {
+    const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
 
-export const clerkWebhooks = async (req , res) =>{
-    try{
-
-        //create a svix instance with clerk webhook secret
-        const whook = new Webhook (process.env.CLERK_WEBHOOK_SECRET)
-
-
-
-        //verifying headers
-        await whook.verify(JSON.stringify(req.body), {
-            "svix-id" : req.headers["svix-id"],
-            "svix-timestamp" : req.headers["svix-timestamp"],
-            "svix-signature" : req.headers["svix-signature"]
-
-        }) 
-
-        //Getting cases for different Events
-
-        const {data , type} = req.body
+const evt = wh.verify(JSON.stringify(req.body), {
+  "svix-id": req.headers["svix-id"],
+  "svix-timestamp": req.headers["svix-timestamp"],
+  "svix-signature": req.headers["svix-signature"],
+});
 
 
+    const { data, type } = evt;
 
-        // Switch Cases for different Evenets 
+    switch (type) {
+  case "user.created": {
 
-        switch (type) {
-            case 'user.created':{
- 
-                const userData = {
-                    _id:data.id,
-                    email:data.email_addresses[0].emial_address,
-                    name:data.first_name + " " + data.last_name,
-                    image:data.image_url,
-                    resume:''
+  const primaryEmail = data.email_addresses.find(
+    email => email.id === data.primary_email_address_id
+  );
 
-                }
+  await User.create({
+    _id: data.id,
+    email: primaryEmail?.email_address || "",
+    name: `${data.first_name || ""} ${data.last_name || ""}`,
+    image: data.image_url || "",
+    resume: "",
+  });
 
-                await User.create(userData)
-                res.json({})
-                break;
-            }
-                
-
-            case 'user.updated':{
-
-                    const userData = {
-                    email:data.email_addresses[0].email_address,
-                    name:data.first_name + " " + data.last_name,
-                    image:data.image_url,
-
-                }
-                await User.findByIdAndUpdate(data.id , userData)
-                res.json({})
-                break;
-                
-            }
+  break;
+}
 
 
+      case "user.updated":
+        await User.findByIdAndUpdate(data.id, {
+          email: data.email_addresses[0].email_address,
+          name: `${data.first_name} ${data.last_name}`,
+          image: data.image_url,
+        });
+        break;
 
-            case 'user.deleted':{
-                await User.findByIdAndDelete(data.id)
-                res.json({})
-                break;
-            }
-
-            default : 
-            break;
-          
-        }
+      case "user.deleted":
+        await User.findByIdAndDelete(data.id);
+        break;
     }
 
-    catch(error){
-console.log(error.message);
-res.json({success:false , message:'Webhooks Error'})
-    }
+    res.status(200).json({ success: true });
+
+  } catch (error) {
+    console.error("Webhook error:", error.message);
+    res.status(400).json({ success: false });
+  }
+
+  console.log("Connected DB:", mongoose.connection.name)
+
 }
