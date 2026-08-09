@@ -1,49 +1,42 @@
-
-import './config/instrument.js'
+import './config/instrument.js';
 import express from 'express';
-import cors from 'cors'
-import 'dotenv/config'
-import { connect } from 'mongoose';
-import connectDB from './config/db.js';
+import cors from 'cors';
+import 'dotenv/config';
 
-import * as Sentry from "@sentry/node";
+import connectDB from './config/db.js';
+import * as Sentry from '@sentry/node';
 import { clerkWebhooks } from './controllers/webhooks.js';
 
+// Initialize Express
+const app = express();
 
+// Connect to database
+await connectDB();
 
-//Initialize Express
-const app = express()
+// Middleware
+app.use(cors());
 
-//connect to database
-await connectDB()
-
-//Middlewares
-app.use(cors())
-
+// IMPORTANT: Clerk webhook must come before express.json()
 app.post(
-  "/webhooks",
-  express.raw({ type: "application/json" }),
+  '/webhooks',
+  express.raw({ type: 'application/json' }),
   clerkWebhooks
 );
 
-app.use(express.json())
+// Normal JSON requests
+app.use(express.json());
 
-//Routes
-app.get('/' , (req, res) =>res.send("API Working"))
-app.get("/debug-sentry", function mainHandler(req, res) {
-  throw new Error("My first Sentry error!");
+// Routes
+app.get('/', (req, res) => {
+  res.send('API Working');
 });
 
+app.get('/debug-sentry', function mainHandler(req, res) {
+  throw new Error('My first Sentry error!');
+});
 
+// Sentry error handler
+Sentry.setupExpressErrorHandler(app);
 
-//PORT
-const PORT = process.env.PORT || 5000
-
-
-Sentry.setupExpressErrorHandler(app)
-
-app.listen(PORT, ()=>{
-    console.log(`Server is runnig on ${PORT}`)
-})
-console.log("DATABASE NAME:" + process.env.MONGODB_URI)
-
+// Vercel handles the server
+export default app;
