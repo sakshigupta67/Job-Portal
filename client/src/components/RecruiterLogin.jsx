@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { assets } from '../assets/assets'
 import { AppContext } from '../context/AppContext'
+import { useNavigate } from 'react-router-dom'
 
 const RecruiterLogin = () => {
  
@@ -14,12 +15,47 @@ const[image , setImage] = useState(false)
 const[isTextDataSubmitted , setIsTextDataSubmitted] =useState(false)
 
 const {setShowRecruiterLogin} = useContext(AppContext)
+const navigate = useNavigate()
 
 const onSubmitHandler = async(e) => {
   e.preventDefault()
 
-  if(state == "Sign Up" && !isTextDataSubmitted){
+  if(state === 'Sign Up' && !isTextDataSubmitted){
     setIsTextDataSubmitted(true)
+    return
+  }
+
+  try {
+    const isLogin = state === 'Login'
+    const endpoint = isLogin ? 'http://localhost:3000/api/company/login' : 'http://localhost:3000/api/company/register'
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: isLogin ? { 'Content-Type': 'application/json' } : undefined,
+      body: isLogin
+        ? JSON.stringify({ email, password })
+        : (() => {
+            const formData = new FormData()
+            formData.append('name', name)
+            formData.append('email', email)
+            formData.append('password', password)
+            formData.append('image', image)
+            return formData
+          })(),
+    })
+    const data = await response.json()
+
+    if (data.success) {
+      localStorage.setItem('companyToken', data.token)
+      setShowRecruiterLogin(false)
+      navigate('/dashboard/add-job')
+      return
+    }
+
+    alert(data.message || 'Authentication failed')
+  } catch (error) {
+    console.error(error)
+    alert('Unable to reach the server')
   }
 }
 
