@@ -1,32 +1,14 @@
 import express from 'express';
-import fs from 'fs';
-import multer from 'multer';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import upload from '../config/multer.js';
 import { getUserById, updateResume } from '../controllers/userController.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const uploadDir = path.join(__dirname, '../uploads');
-
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
-
-const upload = multer({ storage });
+import { protectUser } from '../middlewares/auth.js';
 
 const router = express.Router();
 
+// Public — job seekers need their own profile to be readable (e.g. ApplyJob page fetches it)
 router.get('/:id', getUserById);
-router.patch('/:id/resume', upload.single('resume'), updateResume);
+
+// Protected — only the authenticated user may update their own resume
+router.patch('/:id/resume', protectUser, upload.single('resume'), updateResume);
 
 export default router;

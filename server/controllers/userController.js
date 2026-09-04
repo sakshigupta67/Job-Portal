@@ -21,6 +21,12 @@ export const updateResume = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Resume file is required' });
     }
 
+    // Ensure the authenticated user can only update their own resume
+    const tokenUserId = req.user?.id || req.user?.sub;
+    if (tokenUserId && tokenUserId !== req.params.id) {
+      return res.status(403).json({ success: false, message: 'Forbidden: cannot update another user\'s resume' });
+    }
+
     const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });

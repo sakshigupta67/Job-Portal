@@ -103,7 +103,9 @@ export const getCompanyJobs = async (req, res) => {
 export const applyToJob = async (req, res) => {
   try {
     const { jobId } = req.params;
-    const { userId, resumeUrl } = req.body;
+    // userId comes from the verified Clerk JWT (set by protectUser middleware)
+    const userId = req.user?.id || req.user?.sub;
+    const { resumeUrl } = req.body;
 
     if (!jobId || !userId || !resumeUrl) {
       return res.status(400).json({ success: false, message: 'Missing application details' });
@@ -143,12 +145,15 @@ export const uploadResume = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Resume file is required' });
     }
 
+    // userId from verified token — ignore any client-supplied userId in body
+    const userId = req.user?.id || req.user?.sub;
+
     const filePath = req.file.path;
     const url = await uploadToCloudinary(filePath);
     await fs.unlink(filePath);
 
-    if (req.body.userId) {
-      await User.findByIdAndUpdate(req.body.userId, { resume: url });
+    if (userId) {
+      await User.findByIdAndUpdate(userId, { resume: url });
     }
 
     return res.status(200).json({ success: true, resumeUrl: url });
@@ -159,7 +164,8 @@ export const uploadResume = async (req, res) => {
 
 export const getApplicationsForUser = async (req, res) => {
   try {
-    const { userId } = req.query;
+    // userId comes from the verified Clerk JWT set by protectUser middleware
+    const userId = req.user?.id || req.user?.sub;
 
     if (!userId) {
       return res.status(400).json({ success: false, message: 'User id is required' });

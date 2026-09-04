@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt';
 import Company from '../models/Company.js';
 import Job from '../models/Job.js';
 import Application from '../models/Application.js';
+import { uploadToCloudinary } from '../utils/cloudinary.js';
+import fs from 'fs/promises';
 
 const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
@@ -20,12 +22,17 @@ export const registerCompany = async (req, res) => {
       return res.status(409).json({ success: false, message: 'Company already registered' });
     }
 
+    // Upload logo to Cloudinary (falls back to local path if Cloudinary not configured)
+    const imageUrl = await uploadToCloudinary(imageFile.path);
+    // Clean up temp file after Cloudinary upload
+    try { await fs.unlink(imageFile.path); } catch (_) { /* ignore if already gone */ }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const company = await Company.create({
       name,
       email,
       password: hashedPassword,
-      image: imageFile.filename ? `/uploads/${imageFile.filename}` : imageFile.path,
+      image: imageUrl,
     });
 
     return res.status(201).json({
@@ -113,7 +120,28 @@ export const getCompanyJobApplicants = async (req, res) => {
 
 export const getCompanyPostedJobs = async (req, res) => {
   try {
-    const jobs = await Job.find({ companyId: req.company._id }).sort({ date: -1 });
+    // Aggregate applicant count per job so the frontend can display real numbers
+    const jobs = await Job.aggregate([
+      { $match: { companyId: req.company._id } },
+      { $sort: { date: -1 } },
+      {
+        $lookup: {
+          from: 'applications',
+          localField: '_id',
+          foreignField: 'jobId',
+          as: 'applicationDocs',
+        },
+      },
+      {
+        $addFields: {
+          applicants: { $size: '$applicationDocs' },
+        },
+      },
+      {
+        $project: { applicationDocs: 0 },
+      },
+    ]);
+
     return res.status(200).json({ success: true, jobs });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -161,4 +189,3 @@ export const changeVisibility = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-
