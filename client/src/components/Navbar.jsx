@@ -24,6 +24,7 @@ const Navbar = () => {
         {user ? (
           /* ── Signed-in job seeker ── */
           <div className='flex gap-4 max-sm:text-xs items-center'>
+            <Link to='/features'>Features</Link>
             <Link to='/applications'>Applied Jobs</Link>
             <p>|</p>
             <p className='max-sm:hidden'>Hi, {user.firstName} {user.lastName}</p>
@@ -32,6 +33,7 @@ const Navbar = () => {
         ) : companyToken ? (
           /* ── Logged-in recruiter (company) ── */
           <div className='flex gap-4 max-sm:text-xs items-center'>
+            <Link to='/features'>Features</Link>
             <button
               onClick={() => navigate('/dashboard/manage-jobs')}
               className='bg-blue-600 text-white px-6 sm:px-9 py-2 rounded-full'
@@ -42,6 +44,7 @@ const Navbar = () => {
         ) : (
           /* ── Guest ── */
           <div className='flex gap-4 max-sm:text-xs items-center'>
+            <Link to='/features'>Features</Link>
             <button
               onClick={() => setShowRecruiterLogin(true)}
               className='text-gray-600'
