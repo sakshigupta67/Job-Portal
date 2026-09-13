@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { verifyToken } from '@clerk/backend';
 import Company from '../models/Company.js';
 
 export const protectCompany = async (req, res, next) => {
@@ -33,8 +34,12 @@ export const protectUser = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Authentication required' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    if (!process.env.CLERK_SECRET_KEY) {
+      return res.status(500).json({ success: false, message: 'Clerk server authentication is not configured' });
+    }
+
+    const decoded = await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY });
+    req.user = { ...decoded, id: decoded.sub };
     next();
   } catch (error) {
     return res.status(401).json({ success: false, message: 'Invalid or expired token' });
