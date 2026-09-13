@@ -34,6 +34,12 @@ const Dashboard = () => {
           />
 
           <div className='flex items-center gap-3'>
+            <button
+              onClick={() => navigate('/features')}
+              className='text-gray-700 hover:text-blue-600'
+            >
+              Features
+            </button>
             <p className='max-sm:hidden'>
               Welcome, {companyData ? companyData.name : '...'}
             </p>
