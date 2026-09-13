@@ -18,9 +18,10 @@ export const uploadToCloudinary = async (filePath) => {
     return `/uploads/${path.basename(filePath)}`;
   }
 
+  const extension = path.extname(filePath).toLowerCase();
   const result = await cloudinary.uploader.upload(filePath, {
     folder: 'job-portal',
-    resource_type: 'auto',
+    resource_type: extension === '.pdf' ? 'raw' : 'auto',
   });
 
   return result.secure_url;

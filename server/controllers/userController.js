@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import User from '../models/User.js';
+import Application from '../models/Application.js';
 import { uploadToCloudinary } from '../utils/cloudinary.js';
 
 export const getUserById = async (req, res) => {
@@ -37,6 +38,7 @@ export const updateResume = async (req, res) => {
 
     user.resume = resumeUrl;
     await user.save();
+    await Application.updateMany({ userId: req.params.id }, { $set: { resume: resumeUrl } });
 
     return res.status(200).json({ success: true, message: 'Resume updated', resumeUrl });
   } catch (error) {
